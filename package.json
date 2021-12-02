@@ -18,5 +18,8 @@
   "bugs": {
     "url": "https://github.com/thedon122/simple-nodejs/issues"
   },
-  "homepage": "https://github.com/thedon122/simple-nodejs#readme"
+  "homepage": "https://github.com/thedon122/simple-nodejs#readme",
+  "dependencies": {
+    "lodash": "^4.17.21"
+  }
 }

@@ -1,33 +1,35 @@
-const express = require('express');
-const path = require('path');
+const res = require('express/lib/response');
 const Joi = require('joi');
-const bodyParser = require('body-parser');
-const { result } = require('lodash');
-const app = express();
+const { trim, keys } = require('lodash');
 
-app.use('/public',express.static(path.join(__dirname,'static')));
-app.use(bodyParser.urlencoded({extended: false}));
-app.use(bodyParser.json());
+const arrayString = ['banana','bacon','cheese'];
+const arrayObjects = [{example: 'example1'},{example: 'example2'}];
 
-app.get('/',(req,res)=>{
-    res.sendFile(path.join(__dirname,'static','index.html'));
+const userInput = { personalInfo : {
+                        streetAddress: '123987987',
+                        city: 'kljlkajd',
+                        state: 'fl'
+                    },
+                    preferences : arrayObjects};
+
+const personalInfoSchema = Joi.object().keys({
+    streetAddress : Joi.string().trim().required(),
+    city : Joi.string().trim().required(),
+    state : Joi.string().trim().length(2).required()
 });
 
-app.post('/',(req,res)=>{
-    console.log(req.body);
-    const schema = Joi.object().keys({
-        email : Joi.string().trim().email().required(),
-        password: Joi.string().min(5).max(10).required()
-    });
-     const validation = schema.validate(req.body,(err,result)=>{
-        if(err){
-            console.log(err);
-            res.send('an error has occurred');
-        }
-        console.log(result);    
-        res.send('successfully posted data');   
-    });
-    res.send(validation);
+const preferencesSchema = Joi.array().items(Joi.object().keys({
+    example: Joi.string().required()
+}));
+
+const schema = Joi.object().keys({
+    personalInfo: personalInfoSchema,
+    preferences: preferencesSchema
 });
 
-app.listen(3000);
+const validation = schema.validate(userInput);
+
+if(validation.error)
+    console.log(validation.error)
+else
+    console.log(userInput);
